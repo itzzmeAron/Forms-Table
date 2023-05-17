@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Bootstrap link for design -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Title of the system -->
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="alert alert-primary text-center">
+          Bookshelf App
+        </h1>
+      </div>
+      <!-- Form design -->
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <form id="form">
+              <input type="hidden" name="id" id="inputBookId">
+              <label for="inputBookTitle">Title</label>
+              <input type="text" placeholder="Title" class="form-control" id="inputBookTitle" required>
+              <br>
+              <label for="inputBookAuthor">Author</label>
+              <input type="text" placeholder="Author" class="form-control" id="inputBookAuthor" required>
+              <br>
+              <label for="inputBookYear">Year</label>
+              <input type="number" placeholder="Year" class="form-control" id="inputBookYear" required>
+              <br>
+              <label for="inputBookIsComplete">Finished reading</label>
+              <input id="inputBookIsComplete" type="checkbox">
+              <br>
+              <br>
+              <button class="btn btn-sm btn-primary" type="button" onclick="save()">Save</button>
+              <button class="btn btn-sm btn-primary" type="button" onclick="clearData()">Reset</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Table design for unread books -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h2>Unread</h2>
+            <div class="table-responsive">
+              <table id="unreadTable" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Read</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="unreadBooks">
+
+                </tbody>
+              </table>
+            </div>
+            <hr>
+            <!-- Table design for read books -->
+            <h2>Read</h2>
+            <div class="table-responsive">
+              <table id="readTable" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Unread</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="readBooks">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Script links for Bootstrap, Popper.js, and main.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+  <script src="main.js"></script>
+  <!-- Script for fetching data -->
+  <script>
+    // Sample book data for demonstration
+    let books = [
+      { id: 1, title: 'Book 1', author: 'Author 1', year: 2021, isComplete: false },
+      { id: 2, title: 'Book 2', author: 'Author 2', year: 2022, isComplete: true }
+    ];
+
+    // Function to populate the tables with book data
+    function populateTables() {
+      let unreadBooksTable = document.getElementById('unreadBooks');
+      let readBooksTable = document.getElementById('readBooks');
+
+      unreadBooksTable.innerHTML = '';
+      readBooksTable.innerHTML = '';
+
+      for (let i = 0; i < books.length; i++) {
+        let book = books[i];
+
+        let row = `<tr>
+                    <td>${i + 1}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.year}</td>
+                    <td>${book.isComplete ? 'Yes' : 'No'}</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="editBook(${book.id})">Edit</button></td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteBook(${book.id})">Delete</button></td>
+                  </tr>`;
+
+        if (book.isComplete) {
+          readBooksTable.innerHTML += row;
+        } else {
+          unreadBooksTable.innerHTML += row;
+        }
+      }
+    }
+
+    // Function to save the form data
+    function save() {
+      let title = document.getElementById('inputBookTitle').value;
+      let author = document.getElementById('inputBookAuthor').value;
+      let year = document.getElementById('inputBookYear').value;
+      let isComplete = document.getElementById('inputBookIsComplete').checked;
+
+      // Generate a unique ID for the new book
+      let id = Date.now();
+
+      // Create a new book object
+      let newBook = { id, title, author, year, isComplete };
+
+      // Add the new book to the books array
+      books.push(newBook);
+
+      // Clear the form and update the tables
+      clearData();
+      populateTables();
+    }
+
+    // Function to clear the form data
+    function clearData() {
+      document.getElementById('form').reset();
+      document.getElementById('inputBookId').value = '';
+    }
+
+    // Function to edit a book
+    function editBook(id) {
+      // Find the book in the books array based on the ID
+      let book = books.find((b) => b.id === id);
+
+      // Populate the form with the book data
+      document.getElementById('inputBookId').value = book.id;
+      document.getElementById('inputBookTitle').value = book.title;
+      document.getElementById('inputBookAuthor').value = book.author;
+      document.getElementById('inputBookYear').value = book.year;
+      document.getElementById('      inputBookIsComplete').checked = book.isComplete;
+    }
+
+    // Function to delete a book
+    function deleteBook(id) {
+      // Find the index of the book in the books array based on the ID
+      let index = books.findIndex((b) => b.id === id);
+
+      // Remove the book from the array
+      books.splice(index, 1);
+
+      // Update the tables
+      populateTables();
+    }
+
+    // Call the populateTables() function initially to display the books
+    populateTables();
+  </script>
+</body>
+</html>
+
